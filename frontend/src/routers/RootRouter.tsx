@@ -1,5 +1,4 @@
 import { Routes, Route } from "react-router";
-import LandingPage from "@/pages/root/LandingPage";
 import { NewsFeed } from "@/components/NewsFeed";
 import { ArticleDetail } from "@/components/ArticleDetail";
 import { JournalistDashboard } from "@/components/JournalistDashboard";
@@ -16,8 +15,7 @@ import LoginRegister from "@/pages/auth/LoginRegister";
 export default function RootRouter() {
   return (
     <Routes>
-      <Route path="/" element={<LandingPage />} />
-      <Route path="/news" element={<NewsFeed />} />
+      <Route path="/" element={<NewsFeed />} />
       <Route path="/article/:id" element={<ArticleDetail />} />
       <Route path="/auth" element={<LoginRegister />} />
       <Route path="/auth/login" element={<LoginRegister />} />

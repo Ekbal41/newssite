@@ -1,33 +1,31 @@
 import { useAuth } from "@/hooks/useAuth";
-import { ModeToggle } from "../mode-toggle";
-import ProjectLogo from "../ProjectLogo";
 import { Link } from "react-router";
 import { Button } from "../ui/button";
-import { ArrowRight, LogIn } from "lucide-react";
+import { LayoutDashboard } from "lucide-react";
 
 export default function Navbar() {
   const { user } = useAuth();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-18 items-center justify-between px-4">
-        <ProjectLogo />
-        <div className="flex items-center gap-4">
-          <ModeToggle />
+    <header className="border-b bg-background">
+      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+        <Link to="/" className="text-xl font-semibold tracking-tight">
+          SatyaNews
+        </Link>
+
+        <nav className="flex items-center gap-4">
           {user ? (
             <Link to="/dashboard">
-              <Button variant="default" size="sm">
-                Dashboard <ArrowRight className="ml-2 h-4 w-4" />
+              <Button size="sm" variant="outline">
+                <LayoutDashboard className="w-4 h-4 mr-2" /> Dashboard
               </Button>
             </Link>
           ) : (
             <Link to="/auth">
-              <Button variant="default" size="sm">
-                <LogIn className="mr-2 h-4 w-4" /> Sign In
-              </Button>
+              <Button size="sm">Sign In</Button>
             </Link>
           )}
-        </div>
+        </nav>
       </div>
     </header>
   );
