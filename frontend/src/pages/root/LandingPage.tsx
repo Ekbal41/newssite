@@ -1,162 +1,162 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, ShieldCheck, Globe, Zap, LayoutDashboard } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import {
+  ArrowRight,
+  ShieldCheck,
+  Globe2,
+  Scale,
+  LayoutDashboard,
+} from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import ProjectLogo from "@/components/ProjectLogo";
-import { ModeToggle } from "@/components/mode-toggle";
 
 export default function LandingPage() {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Navigation */}
-      <nav className="border-b sticky top-0 z-50 bg-background">
-        <div className="container mx-auto px-4 h-14 flex items-center justify-between">
-          <ProjectLogo />
-          <div className="flex items-center gap-4">
-            <Link to="/news" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hidden sm:block">
-              News Feed
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* Top Bar */}
+      <header className="border-b bg-background">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+          <Link to="/" className="text-xl font-semibold tracking-tight">
+            SatyaNews
+          </Link>
+
+          <nav className="flex items-center gap-4">
+            <Link
+              to="/news"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Latest News
             </Link>
-            <ModeToggle />
+
             {user ? (
               <Link to="/dashboard">
-                <Button size="sm">
+                <Button size="sm" variant="outline">
                   <LayoutDashboard className="w-4 h-4 mr-2" /> Dashboard
                 </Button>
               </Link>
             ) : (
-              <div className="flex items-center gap-2">
-                <Link to="/auth/login">
-                  <Button variant="ghost" size="sm">Log In</Button>
-                </Link>
-                <Link to="/auth/register">
-                  <Button size="sm">Get Started</Button>
-                </Link>
-              </div>
+              <Link to="/auth/login">
+                <Button size="sm">Sign In</Button>
+              </Link>
             )}
-          </div>
+          </nav>
         </div>
-      </nav>
+      </header>
 
-      {/* Hero Section */}
-      <section className="py-20 md:py-28">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
-              <ShieldCheck className="w-3.5 h-3.5" /> Verified News Platform
-            </div>
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
-              Truth Over <span className="text-primary">Virality</span>
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              The first news platform for Bangladesh where every story is human-verified, source-transparent, and free from engagement-driven bias.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-              <Link to="/news">
-                <Button size="lg">
-                  Read Verified News <ArrowRight className="ml-2 w-4 h-4" />
-                </Button>
-              </Link>
-              {!user && (
-                <Link to="/auth/register">
-                  <Button variant="outline" size="lg">
-                    Become a Journalist
-                  </Button>
-                </Link>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Editorial Hero */}
+      <main className="flex-1">
+        <section className="py-24">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div className="space-y-6">
+                <Badge variant="outline" className="w-fit">
+                  Independent Journalism • Bangladesh
+                </Badge>
 
-      {/* Features Section */}
-      <section className="py-16 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold">Why SatyaNews?</h2>
-            <p className="text-muted-foreground mt-2">Rebuilding trust in journalism through transparency.</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            <Card>
-              <CardHeader>
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-2">
-                  <ShieldCheck className="w-5 h-5" />
-                </div>
-                <CardTitle className="text-lg">Human Verified</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Every article undergoes a 3-stage verification process by independent fact-checkers and editors.
+                <h1 className="text-4xl md:text-5xl font-bold leading-tight">
+                  Journalism Built on
+                  <br />
+                  <span className="text-primary">
+                    Evidence and Accountability
+                  </span>
+                </h1>
+
+                <p className="text-muted-foreground text-lg max-w-xl">
+                  SatyaNews is a public-interest news platform where reports are
+                  reviewed, sources are disclosed, and popularity does not
+                  decide visibility.
                 </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-2">
-                  <Globe className="w-5 h-5" />
-                </div>
-                <CardTitle className="text-lg">Full Transparency</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  We cite every source and provide evidence used for verification. Trace every claim to its origin.
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-2">
-                  <Zap className="w-5 h-5" />
-                </div>
-                <CardTitle className="text-lg">Anti-Virality Model</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  No likes, no shares, no algorithmic manipulation. We prioritize accuracy over clicks.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
 
-      {/* CTA Section */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <Card className="bg-primary text-primary-foreground border-0">
-            <CardContent className="py-12 text-center space-y-6">
-              <h2 className="text-2xl md:text-3xl font-bold">Ready to see the truth?</h2>
-              <p className="text-primary-foreground/80 max-w-md mx-auto">
-                Join thousands who have switched to a more honest way of consuming news.
-              </p>
-              <Link to="/news">
-                <Button size="lg" variant="secondary">
-                  Enter News Portal
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
+                <div className="flex flex-wrap gap-4">
+                  <Link to="/news">
+                    <Button size="lg">
+                      Browse Verified Reports{" "}
+                      <ArrowRight className="ml-2 w-4 h-4" />
+                    </Button>
+                  </Link>
 
-      {/* Footer */}
-      <footer className="py-8 border-t">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <ProjectLogo />
-            <div className="flex gap-6 text-sm text-muted-foreground">
-              <Link to="/news" className="hover:text-foreground transition-colors">News</Link>
-              <Link to="/about" className="hover:text-foreground transition-colors">About</Link>
-              <Link to="/terms" className="hover:text-foreground transition-colors">Terms</Link>
+                  {!user && (
+                    <Link to="/auth/register">
+                      <Button size="lg" variant="secondary">
+                        Join as Contributor
+                      </Button>
+                    </Link>
+                  )}
+                </div>
+              </div>
+
+              {/* Credibility Panel */}
+              <Card className="border">
+                <CardHeader>
+                  <CardTitle className="text-lg">
+                    Our Editorial Principles
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex gap-3">
+                    <ShieldCheck className="w-5 h-5 text-primary" />
+                    <p className="text-sm text-muted-foreground">
+                      Mandatory multi-layer human verification for every
+                      article.
+                    </p>
+                  </div>
+                  <div className="flex gap-3">
+                    <Globe2 className="w-5 h-5 text-primary" />
+                    <p className="text-sm text-muted-foreground">
+                      Public source citations and evidence disclosure.
+                    </p>
+                  </div>
+                  <div className="flex gap-3">
+                    <Scale className="w-5 h-5 text-primary" />
+                    <p className="text-sm text-muted-foreground">
+                      Ranking based on factual strength, not engagement metrics.
+                    </p>
+                  </div>
+                  <div className="flex gap-3">
+                    <Globe2 className="w-5 h-5 text-primary" />
+                    <p className="text-sm text-muted-foreground">
+                      Public source citations and evidence disclosure.
+                    </p>
+                  </div>
+                  <div className="flex gap-3">
+                    <Scale className="w-5 h-5 text-primary" />
+                    <p className="text-sm text-muted-foreground">
+                      Ranking based on factual strength, not engagement metrics.
+                    </p>
+                  </div>
+                  <div className="flex gap-3">
+                    <Globe2 className="w-5 h-5 text-primary" />
+                    <p className="text-sm text-muted-foreground">
+                      Public source citations and evidence disclosure.
+                    </p>
+                  </div>
+                  <div className="flex gap-3">
+                    <Scale className="w-5 h-5 text-primary" />
+                    <p className="text-sm text-muted-foreground">
+                      Ranking based on factual strength, not engagement metrics.
+                    </p>
+                  </div>
+                  <div className="flex gap-3">
+                    <Globe2 className="w-5 h-5 text-primary" />
+                    <p className="text-sm text-muted-foreground">
+                      Public source citations and evidence disclosure.
+                    </p>
+                  </div>
+                  <div className="flex gap-3">
+                    <Scale className="w-5 h-5 text-primary" />
+                    <p className="text-sm text-muted-foreground">
+                      Ranking based on factual strength, not engagement metrics.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} SatyaNews
-            </p>
           </div>
-        </div>
-      </footer>
+        </section>
+      </main>
     </div>
   );
 }

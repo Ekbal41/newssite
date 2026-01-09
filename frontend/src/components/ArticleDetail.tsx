@@ -1,188 +1,199 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import api from "@/api/axios";
 import dayjs from "dayjs";
+import DOMPurify from "dompurify";
+import api from "@/api/axios";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+
+import {
+  AlertCircle,
+  Calendar,
+  ChevronLeft,
+  Flag,
+  History,
+  MapPin,
+  Printer,
+  Share2,
+  User,
+} from "lucide-react";
+
 import { VerificationBadge } from "./VerificationBadge";
 import { SourceList } from "./SourceList";
-import { AlertCircle, History, User, MapPin, Calendar, Flag, Share2, Printer, ChevronLeft } from "lucide-react";
 import { ReportModal } from "./ReportModal";
-import DOMPurify from "dompurify";
-import { Link } from "react-router-dom";
 
-export const ArticleDetail = () => {
-    const { id } = useParams();
-    const [showReportModal, setShowReportModal] = useState(false);
+export function ArticleDetail() {
+  const { id } = useParams();
+  const [showReportModal, setShowReportModal] = useState(false);
 
-    const { data: article, isLoading } = useQuery({
-        queryKey: ["article", id],
-        queryFn: async () => {
-            const res = await api.get(`/articles/${id}`);
-            return res.data.article;
-        }
-    });
+  const { data: article, isLoading } = useQuery({
+    queryKey: ["article", id],
+    queryFn: async () => {
+      const res = await api.get(`/articles/${id}`);
+      return res.data.article;
+    },
+  });
 
-    if (isLoading) return (
-        <div className="max-w-6xl mx-auto py-16 space-y-12 animate-pulse">
-            <div className="h-4 bg-muted rounded w-32"></div>
-            <div className="h-16 bg-muted rounded-2xl w-3/4"></div>
-            <div className="h-8 bg-muted rounded-xl w-1/2"></div>
-            <div className="h-96 bg-muted rounded-3xl w-full"></div>
-        </div>
-    );
-
-    if (!article) return (
-        <div className="max-w-6xl mx-auto py-16 text-center">
-            <div className="p-4 bg-muted rounded-full inline-block mb-6">
-                <AlertCircle className="w-12 h-12 text-muted-foreground" />
-            </div>
-            <h2 className="text-4xl font-serif font-bold mb-4">Article Not Found</h2>
-            <p className="text-muted-foreground text-lg">The article you are looking for does not exist or has been removed.</p>
-            <Link to="/" className="mt-8 inline-block btn-primary">Return to News Feed</Link>
-        </div>
-    );
-
-    const latestCorrection = article.corrections?.[0];
-    const sanitizedBody = DOMPurify.sanitize(article.body);
-
+  if (isLoading) {
     return (
-        <article className="max-w-6xl mx-auto px-4 py-8 md:py-16 md:py-24">
-            <Link to="/news" className="inline-flex items-center gap-2 text-black font-bold uppercase tracking-widest text-xs mb-12 transition-colors group">
-                <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> Back to News Feed
-            </Link>
-
-            {/* Correction Notice */}
-            {latestCorrection && (
-                <div className="mb-16 p-8 bg-amber-50/50 border border-amber-200 backdrop-blur-sm">
-                    <div className="flex items-center gap-3 text-amber-800 font-bold uppercase tracking-widest text-xs mb-4">
-                        <AlertCircle className="w-5 h-5" /> Correction Notice
-                    </div>
-                    <p className="text-amber-900 text-lg leading-relaxed">
-                        This article was corrected on <span className="font-medium">{dayjs(latestCorrection.createdAt).format("MMMM D, YYYY")}</span>.
-                    </p>
-                </div>
-            )}
-
-            {/* Header */}
-            <header className="mb-16">
-                <div className="flex flex-wrap justify-start md:justify-between items-center gap-4 mb-10">
-                    <div className="flex gap-4"><VerificationBadge status={article.status} />
-                        <span className="badge bg-primary/5 text-primary">
-                            {article.category}
-                        </span></div>
-                    <div className="flex items-center gap-2">
-                        <button className="p-3 text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-xl transition-all" title="Share">
-                            <Share2 className="w-5 h-5" />
-                        </button>
-                        <button className="p-3 text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-xl transition-all" title="Print" onClick={() => window.print()}>
-                            <Printer className="w-5 h-5" />
-                        </button>
-                        <button
-                            onClick={() => setShowReportModal(true)}
-                            className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-destructive hover:bg-destructive/5 px-4 py-2.5 rounded-xl transition-all border border-border ml-2"
-                        >
-                            <Flag className="w-4 h-4" /> Report
-                        </button>
-                    </div>
-                </div>
-
-                <h1 className="text-4xl md:text-5xl font-serif font-bold text-foreground leading-[1.05] mb-12 tracking-tight">
-                    {article.headline}
-                </h1>
-
-                <div className="flex flex-wrap items-center gap-y-6 gap-x-12 text-sm font-bold text-muted-foreground border border-border py-4 bg-secondary/50 px-4 uppercase tracking-widest">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary text-lg">
-                            <User className="w-6 h-6" />
-                        </div>
-                        <div>
-                            <p className="text-foreground leading-none mb-1">{article.author.name}</p>
-                            <p className="text-[10px] opacity-60">Verified Journalist</p>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-2.5">
-                        <MapPin className="w-5 h-5 text-primary" />
-                        <span>{article.location}</span>
-                    </div>
-                    <div className="flex items-center gap-2.5">
-                        <Calendar className="w-5 h-5 text-primary" />
-                        <span>{dayjs(article.publishedAt || article.createdAt).format("MMMM D, YYYY")}</span>
-                    </div>
-                </div>
-            </header>
-
-            {/* Body */}
-            <div
-                className="prose prose-xl md:prose-2xl prose-slate max-w-6xl font-serif leading-relaxed text-foreground/90 mb-24 article-content break-words"
-                dangerouslySetInnerHTML={{ __html: sanitizedBody }}
-            />
-
-            {/* Transparency Section */}
-            <section >
-                <div className="grid md:grid-cols-2 gap-12">
-                    <SourceList sources={article.sources} />
-                    {/* Verification Trail */}
-                    <div className="premium-card">
-                        <h3 className="text-xs font-bold uppercase tracking-widest text-foreground mb-10 flex items-center gap-3">
-                            <History className="w-5 h-5 text-primary" /> Verification Trail
-                        </h3>
-                        <div className="space-y-6 relative">
-                            {article.reviews?.map((review: any) => (
-                                <div
-                                    key={review.id}
-                                    className="relative pl-12
-        before:absolute
-        before:left-[11px]
-        before:top-8
-        before:bottom-[-2.5rem]
-        before:w-0.5
-        before:bg-border
-        last:before:hidden"
-                                >
-                                    <div className="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-background border-2 border-primary flex items-center justify-center z-10">
-                                        <div className="w-2 h-2 rounded-full bg-primary" />
-                                    </div>
-
-                                    <div>
-                                        <div className="text-xs font-bold text-foreground uppercase tracking-widest mb-1.5">
-                                            {review.type === "FACT_CHECK"
-                                                ? "Fact-Check Verified"
-                                                : "Editorial Approved"}
-                                        </div>
-
-                                        <div className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold opacity-60">
-                                            By {review.reviewer.name} •{" "}
-                                            {dayjs(review.createdAt).format("MMM D, YYYY")}
-                                        </div>
-
-                                        {review.comment && (
-                                            <p className="text-base text-muted-foreground mt-4 italic bg-muted/20 px-3 border-l-4 border-primary/20 leading-relaxed">
-                                                "{review.comment}"
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
-
-                            {article.reviews?.length === 0 && (
-                                <div className="pl-12 py-4">
-                                    <p className="text-sm text-muted-foreground italic">
-                                        No verification trail available for this article.
-                                    </p>
-                                </div>
-                            )}
-                        </div>
-
-                    </div>
-                </div>
-            </section>
-
-            {showReportModal && (
-                <ReportModal
-                    articleId={article.id}
-                    onClose={() => setShowReportModal(false)}
-                />
-            )}
-        </article>
+      <div className="max-w-5xl mx-auto px-4 py-24 space-y-8">
+        <Skeleton className="h-4 w-32" />
+        <Skeleton className="h-14 w-3/4" />
+        <Skeleton className="h-6 w-1/2" />
+        <Skeleton className="h-96 w-full" />
+      </div>
     );
-};
+  }
+
+  if (!article) {
+    return (
+      <div className="max-w-5xl mx-auto px-4 py-24 text-center">
+        <AlertCircle className="w-12 h-12 mx-auto text-muted-foreground mb-6" />
+        <h2 className="text-3xl font-semibold mb-2">Article not found</h2>
+        <p className="text-muted-foreground mb-8">
+          The requested article does not exist or has been removed.
+        </p>
+        <Link to="/news">
+          <Button>Return to news</Button>
+        </Link>
+      </div>
+    );
+  }
+
+  const sanitizedBody = DOMPurify.sanitize(article.body);
+  const latestCorrection = article.corrections?.[0];
+
+  return (
+    <article className="max-w-5xl mx-auto px-4 py-20">
+      <Link
+        to="/news"
+        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-10"
+      >
+        <ChevronLeft className="w-4 h-4" /> Back to news
+      </Link>
+
+      {latestCorrection && (
+        <Card className="mb-12 border-amber-200 bg-amber-50">
+          <CardContent className="py-6">
+            <div className="flex items-center gap-2 text-amber-800 text-sm font-medium mb-2">
+              <AlertCircle className="w-4 h-4" /> Correction
+            </div>
+            <p className="text-sm text-amber-900">
+              This article was corrected on{" "}
+              <span className="font-medium">
+                {dayjs(latestCorrection.createdAt).format("MMMM D, YYYY")}
+              </span>
+              .
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
+      <header className="space-y-8 mb-16">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <VerificationBadge status={article.status} />
+            <Badge variant="secondary">{article.category}</Badge>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button size="icon" variant="ghost">
+              <Share2 className="w-4 h-4" />
+            </Button>
+            <Button size="icon" variant="ghost" onClick={() => window.print()}>
+              <Printer className="w-4 h-4" />
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setShowReportModal(true)}
+            >
+              <Flag className="w-4 h-4 mr-2" /> Report
+            </Button>
+          </div>
+        </div>
+
+        <h1 className="text-3xl md:text-4xl font-semibold leading-tight">
+          {article.headline}
+        </h1>
+
+        <Card>
+          <CardContent className="py-4 flex flex-wrap gap-6 text-sm text-muted-foreground">
+            <div className="flex items-center gap-3">
+              <User className="w-4 h-4" />
+              <span className="font-medium text-foreground">
+                {article.author.name}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <MapPin className="w-4 h-4" /> {article.location}
+            </div>
+            <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4" />
+              {dayjs(article.publishedAt || article.createdAt).format(
+                "MMMM D, YYYY"
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </header>
+
+      <div
+        className="prose prose-xl md:prose-2xl prose-slate max-w-6xl font-serif leading-relaxed text-foreground/90 mb-24 article-content break-words"
+        dangerouslySetInnerHTML={{ __html: sanitizedBody }}
+      />
+
+      <Separator className="my-16" />
+
+      <section className="grid md:grid-cols-2 gap-12">
+        <SourceList sources={article.sources} />
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <History className="w-4 h-4" /> Verification trail
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {article.reviews?.length ? (
+              article.reviews.map((review: any) => (
+                <div key={review.id} className="space-y-1">
+                  <p className="text-sm font-medium">
+                    {review.type === "FACT_CHECK"
+                      ? "Fact-check verified"
+                      : "Editorial approval"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {review.reviewer.name} •{" "}
+                    {dayjs(review.createdAt).format("MMM D, YYYY")}
+                  </p>
+                  {review.comment && (
+                    <p className="text-sm text-muted-foreground italic">
+                      “{review.comment}”
+                    </p>
+                  )}
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-muted-foreground italic">
+                No verification records available.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      </section>
+
+      {showReportModal && (
+        <ReportModal
+          articleId={article.id}
+          onClose={() => setShowReportModal(false)}
+        />
+      )}
+    </article>
+  );
+}

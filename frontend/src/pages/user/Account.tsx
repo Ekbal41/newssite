@@ -36,7 +36,7 @@ export default function Account() {
       </header>
 
       <Card>
-        <CardContent className="pt-6">
+        <CardContent>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-4">
               <Avatar name={user?.name || "User"} variant="beam" size={64} className="rounded-full" />

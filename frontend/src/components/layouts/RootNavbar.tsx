@@ -10,7 +10,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-14 items-center justify-between px-4">
+      <div className="container mx-auto flex h-18 items-center justify-between px-4">
         <ProjectLogo />
         <div className="flex items-center gap-4">
           <ModeToggle />
@@ -21,7 +21,7 @@ export default function Navbar() {
               </Button>
             </Link>
           ) : (
-            <Link to="/auth/login">
+            <Link to="/auth">
               <Button variant="default" size="sm">
                 <LogIn className="mr-2 h-4 w-4" /> Sign In
               </Button>
