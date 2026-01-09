@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Roles: READER, JOURNALIST, FACT_CHECKER, EDITOR, ADMIN
+model User {
+  id            String     @id @default(cuid())
+  email         String     @unique
+  password      String
+  name          String?
+  role          String     @default("READER")
+  articles      Article[]  @relation("Author")
+  reviews       Review[]
+  auditLogs     AuditLog[]
+  reports       Report[]
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+// Status: DRAFT, PENDING_VERIFICATION, PENDING_EDITORIAL, PUBLISHED, REJECTED
+model Article {
+  id            String        @id @default(cuid())
+  headline      String
+  body          String
+  category      String
+  location      String        // Bangladesh district
+  status        String        @default("DRAFT")
+  authorId      String
+  author        User          @relation("Author", fields: [authorId], references: [id])
+  sources       Source[]
+  evidence      Evidence[]
+  reviews       Review[]
+  corrections   Correction[]
+  reports       Report[]
+  publishedAt   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([status, publishedAt])
+}
+
+model Source {
+  id          String   @id @default(cuid())
+  articleId   String
+  article     Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  name        String
+  url         String?
+  description String?
+  isVerified  Boolean  @default(false)
+}
+
+model Evidence {
+  id          String   @id @default(cuid())
+  articleId   String
+  article     Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  type        String   // e.g., "IMAGE", "DOCUMENT", "LINK"
+  url         String
+  description String?
+}
+
+// Type: FACT_CHECK, EDITORIAL
+// Status: APPROVED, REJECTED, CHANGES_REQUESTED
+model Review {
+  id          String       @id @default(cuid())
+  articleId   String
+  article     Article      @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  reviewerId  String
+  reviewer    User         @relation(fields: [reviewerId], references: [id])
+  type        String
+  status      String
+  comment     String?
+  createdAt   DateTime     @default(now())
+}
+
+model Correction {
+  id            String   @id @default(cuid())
+  articleId     String
+  article       Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  editorId      String
+  oldHeadline   String?
+  oldBody       String?
+  reason        String
+  createdAt     DateTime @default(now())
+}
+
+// Status: PENDING, RESOLVED, DISMISSED
+model Report {
+  id          String       @id @default(cuid())
+  articleId   String
+  article     Article      @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  reporterId  String
+  reporter    User         @relation(fields: [reporterId], references: [id])
+  reason      String
+  details     String?
+  status      String       @default("PENDING")
+  createdAt   DateTime     @default(now())
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  action      String
+  targetType  String
+  targetId    String?
+  details     String?  // JSON stringified
+  createdAt   DateTime @default(now())
+}
+
+model Notification {
+  id          String   @id @default(cuid())
+  type        String   // "user", "system"
+  targetId    String?  // For "user" type, the user ID
+  identifier  String?  // For "user" type, the user ID
+  event       String?  // e.g., "NEW_ARTICLE", "ARTICLE_APPROVED"
+  message     String
+  payload     String?  // JSON stringified
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
